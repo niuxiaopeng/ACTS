@@ -1,0 +1,10 @@
+header-component {
+  background-color: $bs-primary-color;
+  color: $white-color;
+  display: block;
+
+  h2 {
+    margin: 0;
+    padding: 16px;
+  }
+}

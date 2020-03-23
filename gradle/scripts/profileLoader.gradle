@@ -1,0 +1,18 @@
+/*
+  Load profile string from system environment variable.
+  "local" will be used if the environment variable is undefined.
+ */
+
+def getProfile() {
+  def profile = project.properties['PROFILE']
+
+  if (profile == null) {
+      profile = System.getenv()['PROFILE'] == null ? 'local' : System.getenv()['PROFILE']
+  }
+
+  return profile
+}
+
+ext {
+  profile = this.getProfile()
+}

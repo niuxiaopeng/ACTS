@@ -1,0 +1,146 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath 'org.ajoberstar:gradle-git:1.7.2'
+  }
+}
+
+plugins {
+  id 'org.sonarqube' version '2.6'
+  id 'org.hidetake.ssh' version '2.9.0'
+  id 'com.moowork.node' version '1.2.0'
+  id "org.asciidoctor.convert" version '1.5.7'
+  id 'com.github.jruby-gradle.base' version '1.5.0'
+}
+
+ext.baseVersion = "${pomVersion}"
+version baseVersion
+
+import static groovy.io.FileType.FILES
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Person
+
+import groovy.json.JsonBuilder
+
+ext.repo = Grgit.open(project.file('.'))
+
+apply from: "${rootDir}/gradle/scripts/asciidoc.gradle"
+
+def getProfile() {
+  def profile = project.properties['PROFILE']
+
+  if (profile == null) {
+    profile = System.getenv()['PROFILE'] == null ? 'local' : System.getenv()['PROFILE']
+  }
+
+  return profile
+}
+
+// Retrieve Jenkins build variable
+ext.branchName = System.getenv("BRANCH_NAME")
+ext.buildNumber = System.getenv("BUILD_NUMBER")
+
+def isReleaseBuild
+def isDevBuild
+
+if (hasProperty("release")) {
+  isReleaseBuild = true
+} else {
+  isDevBuild = true
+}
+
+task jsBuild(dependsOn: npm_install, type: NpmTask) {
+  args = ['run', 'build', "--env=${profile.toUpperCase()}"];
+}
+
+task versionJson(dependsOn: jsBuild) {
+  doLast {
+    def json = new JsonBuilder()
+    json {
+      status 'SUCCESS'
+      version version
+      profile profile
+      date new Date().format("yyyy/MM/dd HH:mm:ss")
+      commitid repo.head().id
+    }
+    def versionFile = file("dist/output/version.json")
+    versionFile.parentFile.mkdirs()
+    versionFile.write(json.toString())
+  }
+}
+
+def zip = "${pomArtifactId}_${pomVersion}_${profile}.${extension}"
+task release(dependsOn: versionJson, type: Zip) {
+  archiveName zip
+  from('dist/output')
+  doLast {
+    ant.checksum(file: "$buildDir/distributions/$archiveName", algorithm: 'SHA-1', todir: "build/distributions", format: 'MD5SUM')
+  }
+}
+
+sonarqube {
+  properties {
+    property "sonar.sources", "src"
+    property "sonar.exclusions", "node_modules/**"
+    property "sonar.projectVersion", "${pomVersion}_${rootProject.ext.branchName}_${rootProject.ext.buildNumber}"
+    property "sonar.sourceEncoding", "UTF-8"
+    property "sonar.sii.quality.html.report.path", "reports/sonar/htmlhint.json"
+    property "sonar.sii.quality.scss.report.path", "reports/sonar/sasslint.json"
+    property "sonar.sii.quality.ts.report.path", "reports/sonar/tslint.json"
+  }
+}
+
+task checkTsFileName {
+  doLast {
+    new File("$projectDir/src/app").traverse(type:FILES, nameFilter:~/.*\.ts/) {
+      if (it.name =~ /[A-Z]/) {
+        throw new RuntimeException("type scriptファイル名に大文字が含まれてます!\n\t${ it.path }")
+      }
+    }
+  }
+}
+
+task wrapper(type: Wrapper) { gradleVersion = '4.3.1' }
+
+apply plugin: 'groovy'
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  compile 'org.codehaus.groovy:groovy-all:2.3.11'
+}
+
+artifacts {
+  archives(file("$buildDir/distributions/${pomArtifactId}_${pomVersion}_${profile}.zip")){
+    name "${pomArtifactId}_${pomVersion}_${profile}"
+    type 'zip'
+    classifier "${profile}"
+  }
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      pom.groupId = "${pomGroupId}"
+      pom.artifactId = "${pomArtifactId}"
+      pom.version = "${pomVersion}"
+      if (isReleaseBuild) {
+        repository(url: "${mavenRepo}/content/repositories/releases") {
+          authentication(userName: mavenUser, password: mavenPass)
+        }
+      } else if (isDevBuild) {
+        pom.version = pom.version + '-SNAPSHOT'
+        snapshotRepository(url: "${mavenRepo}/content/repositories/snapshots") {
+          authentication(userName: mavenUser, password: mavenPass)
+        }
+      }
+    }
+  }
+}

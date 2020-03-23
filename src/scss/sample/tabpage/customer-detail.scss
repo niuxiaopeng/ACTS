@@ -1,0 +1,42 @@
+customer-detail-component {
+
+  .customer-detail-form {
+
+    .container {
+      margin-left: auto;
+      margin-right: auto;
+      padding: 25px;
+    }
+
+    .button-box {
+      text-align: center;
+    }
+
+    .title {
+      background-color: $bs-title-color;
+      font-size: $bs-title-font-size;
+      width: 200px;
+    }
+
+    .subtitle {
+      background-color: $bs-subtitle-color;
+      font-size: $bs-subtitle-font-size;
+      width: 120px;
+    }
+
+    .require {
+      color: $bs-danger-color;
+    }
+
+    table {
+      margin-bottom: 20px;
+      padding: 50px;
+      width: 100%;
+
+      td {
+        border: solid 1px;
+        padding: 10px;
+      }
+    }
+  }
+}

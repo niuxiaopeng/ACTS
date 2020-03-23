@@ -1,0 +1,9 @@
+- name: Deploy playbook
+  hosts: appservers
+  gather_facts: false
+  become: yes
+  vars_files:
+    - vars/common.yml
+    - vars/sub.yml
+  roles:
+    - web

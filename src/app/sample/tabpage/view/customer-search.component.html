@@ -1,0 +1,66 @@
+<div class="bs-callout bs-callout-primary">
+  <div>
+      <h3>顧客情報検索</h3>
+    <div align="right">
+        <button class="btn btn-primary"  (click)="create()" >新規登録</button>
+    </div>
+  </div>
+  <div>
+    <h4>検索条件</h4>
+    <div class="bs-callout-danger" *ngIf="state.errors">
+      <h4 *ngFor="let err of state.errors.global;">{{err.message}}</h4>
+    </div>
+    <div>&nbsp;
+      <label>顧客番号&nbsp;</label><input [(ngModel)]= "customerSelectConditionForm.customerNo" id="customerNo" type="text">&emsp;
+      <label>漢字氏名&nbsp;</label><input [(ngModel)]= "customerSelectConditionForm.nameKanji" id="nameKanji" type="text">&emsp;
+      <label>カナ氏名&nbsp;</label><input [(ngModel)]= "customerSelectConditionForm.nameKana" id="nameKana" type="text">&emsp;
+      <label>性別&nbsp;</label>
+      <select [(ngModel)]= "customerSelectConditionForm.gender" id="gender" size="1">
+        <option value="">選択なし</option>
+        <option value="1">男性</option>
+        <option value="2">女性</option>
+      </select>
+      <label>年齢&nbsp;</label>
+      <label>（最少）&nbsp;</label><input [(ngModel)]= "minAge" id="minAge" type="number" min="0" style="width: 50px;">
+      <label>-</label>
+      <label>（最大）&nbsp;</label><input [(ngModel)]= "maxAge" id="maxAge" type="number" min="0" style="width: 50px;">&emsp;
+      <label>Eメール有のみ&nbsp;</label><input [(ngModel)]= "customerSelectConditionForm.email" id="email" type="checkbox">&emsp;
+      <div id="button-box" align="right">
+        <button id="search-btn"  class="btn btn-primary" (click)=getCustomerList() disableOnRequest>検索</button>
+        <button id="download-btn"  class="btn btn-primary" (click)="downloadCsv()">Download</button>
+      </div>
+    </div>
+  </div>
+  <div>
+    <h4>検索結果&emsp;{{state.customerSearchListEntity.customerInfo.length ? state.customerSearchListEntity.customerInfo.length : 0}}件</h4>
+    <table class="table table-fixed">
+      <thead>
+      <tr>
+        <th>顧客番号</th>
+        <th>氏名（漢字）</th>
+        <th>氏名（カナ）</th>
+        <th>性別</th>
+        <th>生年月日</th>
+        <th>Eメール</th>
+        <th>編集</th>
+      </tr>
+      </thead>
+      <tbody *ngIf="state.customerSearchListEntity.customerInfo.length > 0; else blank;">
+        <tr *ngFor="let customer of state.customerSearchListEntity.customerInfo; let idx = index;">
+          <td>{{customer.customerNo}}</td>
+          <td>{{customer.nameKanji}}</td>
+          <td>{{customer.nameKana}}</td>
+          <td>{{customer.gender | gender}}</td>
+          <td>{{customer.birthday}}</td>
+          <td>{{customer.email}}</td>
+          <td>
+            <button id="editBtn{{idx}}" class="btn btn-sub btn-sm" (click)="edit(customer.customerNo)">編集</button>
+          </td>
+        </tr>
+      </tbody>
+      <ng-template #blank>
+        <tbody></tbody>
+      </ng-template>
+    </table>
+  </div>
+</div>

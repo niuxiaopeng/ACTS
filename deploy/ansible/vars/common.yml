@@ -1,0 +1,41 @@
+# SSH account
+ansible_ssh_user: deploy
+ansible_ssh_private_key_file: /var/jenkins_home/.ssh/id_rsa
+
+# Login account for Maven repository
+user: jenkins
+pass: 1a6659d0f8b13643
+
+# deploy user, group
+user_deploy: deploy
+group_deploy: deploy
+
+# Artifact group ID
+group_id: acts
+
+# Artifact ID
+artifact_id: acts-sample-front-pj086
+
+# Artifact version(Modify version when necessary)
+version: '0.0.0'
+
+# Maven Snapshots URI
+snapshot_repo: 'https://172.31.43.119/nexus/service/local/artifact/maven/content?r=snapshots'
+
+# Maven Releases URI
+releases_repo: 'https://172.31.43.119/nexus/service/local/artifact/maven/content?r=releases'
+
+# Artifact Extension
+extension: zip
+
+# Snapshots Artifact URI
+snapshot_artifact: '{{ snapshot_repo }}&g={{ group_id }}&a={{ artifact_id }}&v={{ version }}-SNAPSHOT&p={{ extension }}&c={{ classifier }}'
+
+# Releases Artifact URI
+releases_artifact: '{{ releases_repo }}&g={{ group_id }}&a={{ artifact_id }}&v={{ version }}&p={{ extension }}&c={{ classifier }}'
+
+# File Permission
+file_permission: '0755'
+
+# Project/Job name
+project_name: acts-sample-front

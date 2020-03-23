@@ -1,0 +1,20 @@
+<div class="bs-callout bs-callout-primary">
+  <h4>Object Binding Test</h4>
+  <p>Message: {{state?.message}}</p>
+  <p>Label: {{labels.tab.about.description}}</p>
+  <p>AppProperties: {{rootUrl}}</p>
+</div>
+
+<div class="bs-callout bs-callout-primary">
+  <h4>Lazy Loading Test</h4>
+  <p>Watch console to see another js resource is loaded.</p>
+  <p>
+    Note: if you set <code>preloadingStrategy: PreloadAllModules</code> on app-routing.module,
+    another js resource has already been loaded once app is initialized.
+  </p>
+  <button class="btn btn-primary"  routerLink="../lazyloadingpage">
+    Load LazyLoadingPage Module
+  </button>
+</div>
+
+

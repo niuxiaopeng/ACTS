@@ -1,0 +1,64 @@
+jenkins:
+  slack:
+    team: ata-tsc-shared
+    channel:
+      jenkins: '#92_ref-jenkins'
+      developer: '#91_alert-jenkins'
+      ita: '#acts-dev-jenkins'
+      release: '#90_cmd-jenkins'
+      completed: '#acts-release'
+    title: 'acts-sample-front-pj086'
+  tool:
+    java: acts-java
+    gradle: acts-gradle
+    node: acts-node
+  artifacts:
+    base: build/distributions
+    extension: zip
+    files: 'dist/*.zip,dist/*.MD5'
+    filesSHA1: 'build/distributions/*.zip,build/distributions/*.SHA-1'
+  doc:
+    releasenote: '<https://127.0.0.1/releasenote/web/|リリースノート>'
+  release:
+    category1: adep
+    category2: web
+  action:
+    test:
+      active: false
+      command: ''
+    chmodgradlew:
+      command: 'chmod +x ./gradlew'
+    build:
+      command: './gradlew checkTsFileName release'
+    publishSnapshot:
+      command: './gradlew uploadArchives'
+    publishRelease:
+      command: './gradlew uploadArchives -Prelease'
+    deploy:
+      command: ''
+    report:
+      active: false
+    sonar:
+      active: true
+      command: 'rm -rf node_modules/* && npm i && npm run report:sonar && ./gradlew sonar'
+    left_most:
+      active: true
+  shared:
+    environment:
+      - test
+      - test_next
+      - staging
+      - prod
+      - pt
+      - prom
+      - biz
+  crosscheck:
+    profile:
+      - nightly
+      - prod
+      - biz
+      - dev
+      - sub
+    files:
+      - profiles/properties/default.properties.yaml
+      - profiles/properties/env.properties.yaml

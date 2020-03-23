@@ -1,0 +1,19 @@
+APP:
+  API_ROOT: "http://localhost:8080"
+  DIST: ./dist/output
+  ENABLE_PROD_MODE: false
+
+  APP_CSS_PATH: "build/app.css"
+  VENDOR_CSS_PATH: "build/vendor.css"
+
+  POLYFILL_JS_PATH: "build/polyfills.js"
+  VENDOR_JS_PATH: "build/vendor.js"
+  APP_JS_PATH: "build/app.js"
+
+BUILD:
+  MINIFY: false
+  USE_AOT: false
+  SOURCE_MAP: true
+  # To enable DROP_CONSOLE, MINIFY must be true
+  DROP_CONSOLE: false
+  ANALYZE_BUNDLE: false

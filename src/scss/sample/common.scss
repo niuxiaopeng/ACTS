@@ -1,0 +1,95 @@
+// Define styles applied to the entire application.
+sample-component {
+  .bs-callout {
+    border: 1px solid $white-color;
+    border-left-width: 5px;
+    border-radius: 3px;
+    margin: 20px 0;
+    padding: 20px;
+
+    h4 {
+      margin-bottom: 5px;
+      margin-top: 0;
+    }
+
+    p {
+      :last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    code {
+      border-radius: 3px;
+    }
+  }
+
+  .bs-callout+.bs-callout {
+    margin-top: -5px;
+  }
+
+  .bs-callout-default {
+    border-left-color: $bs-default-color;
+
+    h4 {
+      color: $bs-default-color;
+    }
+
+  }
+
+  .bs-callout-primary {
+    border-left-color: $bs-primary-color;
+
+    h3 {
+      color: $bs-primary-color;
+      font-weight: bold;
+    }
+
+    h4 {
+      color: $bs-primary-color;
+    }
+  }
+
+  .bs-callout-success {
+    border-left-color: $bs-success-color;
+
+    h3 {
+      color: $bs-success-color;
+    }
+
+    h4 {
+      color: $bs-success-color;
+    }
+  }
+
+  .bs-callout-danger {
+    border-left-color: $bs-danger-color;
+
+    h3 {
+      color: $bs-danger-color;
+    }
+
+    h4 {
+      color: $bs-danger-color;
+    }
+
+    p {
+      color: $bs-danger-color;
+    }
+  }
+
+  .bs-callout-warning {
+    border-left-color: $bs-warning-color;
+
+    h4 {
+      color: $bs-warning-color;
+    }
+  }
+
+  .bs-callout-info {
+    border-left-color: $bs-info-color;
+
+    h4 {
+      color: $bs-info-color;
+    }
+  }
+}

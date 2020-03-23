@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./aot_compile_check/src/app",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "target": "es5",
+    "noImplicitAny": false,
+    "sourceMap": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ],
+    "skipLibCheck": true,
+    "rootDir": "./aot_compile_check",
+    "pretty": true
+  },
+  "exclude": [
+    "node_modules",
+    "src/app/**/*"
+  ],
+  "angularCompilerOptions": {
+    "skipMetadataEmit": true,
+    "annotationsAs": "decorators"
+  }
+}

@@ -1,0 +1,20 @@
+// Entry point for scss
+
+//---------------------- Global ----------------------
+@import './global';
+
+//---------------------- Global in Sample Module ----------------------
+@import './sample/variables';
+@import './sample/common';
+
+//---------------------- Header ----------------------
+@import './sample/header/header';
+
+//---------------------- TabPage ----------------------
+@import './sample/tabpage/home';
+@import './sample/tabpage/about';
+@import './sample/tabpage/contact';
+@import './sample/tabpage/customer-detail';
+
+//---------------------- LazyLoadingPage ----------------------
+@import './sample/lazyloadingpage/lazy-load';

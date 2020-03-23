@@ -1,0 +1,10 @@
+<div class="bs-callout bs-callout-primary">
+  <h4>Flux Data flow example</h4>
+  <p>See codes to understand details</p>
+  <button type="button" class="btn btn-primary" (click)="showInfo()">
+    Show Contact Info</button>
+  <div class="bs-callout bs-callout-info" *ngIf="state.person">
+    <p>{{state.person}}</p>
+    <p>Email: {{state.email}}</p>
+  </div>
+</div>

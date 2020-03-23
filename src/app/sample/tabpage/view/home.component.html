@@ -1,0 +1,26 @@
+<div class="bs-callout bs-callout-primary">
+  <h4>Welcome to ACTS WebApp!</h4>
+  <p>
+    This tab page is created by ngx-bootstrap with bootstrap3.
+  </p>
+  <p>
+    Take a look at the <code>src/app/</code> directory to explorer how it works.
+  </p>
+</div>
+<div class="bs-callout bs-callout-primary">
+  <h4>LOGIN TEST</h4>
+  <div class="bs-callout-danger" *ngIf="homeState.errors">
+    <h4 *ngFor="let err of homeState.errors.global;">{{err.message}}</h4>
+  </div>
+  <div>
+    <label for="email">EMAIL：</label>
+    <input [(ngModel)]= "loginForm.email" type="text" id="email" />
+  </div>
+  <div>
+    <label for="loginPassword">PASSWORD：</label>
+    <input [(ngModel)]= "loginForm.loginPassword" type="password" id="loginPassword" />
+  </div>
+  <div class="button">
+    <button type="button" class="btn btn-primary" (click)="login()">LOGIN</button>
+  </div>
+</div>

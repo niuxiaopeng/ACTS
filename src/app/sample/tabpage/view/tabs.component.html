@@ -1,0 +1,13 @@
+<!-- 各タブをComponent化しているため、UI実装はそれぞれ参照しにいく必要があります -->
+<tabset [justified]="true">
+  <tab heading="HOME">
+    <!-- サンプルでは、ここにID/PW入力欄が用意されているので、home.component.ts(UIはhome.component.html)が該当します。 -->
+    <home-component></home-component>
+  </tab>
+  <tab heading="ABOUT">
+    <about-component></about-component>
+  </tab>
+  <tab heading="CONTACT">
+    <contact-component></contact-component>
+  </tab>
+</tabset>

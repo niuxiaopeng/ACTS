@@ -1,0 +1,212 @@
+import java.net.URLEncoder
+
+import groovy.io.FileType
+import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
+
+apply from: "${rootDir}/gradle/scripts/profileLoader.gradle"
+
+def dirName = getProperty('sysname')
+def asciidocFormats = getProperty('asciidoc.format').split(',')
+
+dependencies {
+  asciidoctor 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.7'
+  asciidoctor 'org.asciidoctor:asciidoctorj-diagram:1.5.4.1'
+  asciidoctor('org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.16') {
+    exclude module: 'jruby-complete'
+  }
+  asciidoctor 'org.asciidoctor:asciidoctorj-epub3:1.5.0-alpha.7'
+  asciidoctor 'org.jruby:jruby-complete:9.1.13.0'
+
+  gems('rubygems:asciidoctor-pdf-cjk:0.1.3') {
+    exclude module: 'asciidoctor-pdf'
+  }
+}
+
+asciidoctorj {
+  version = '1.6.0-alpha.6'
+}
+
+task initAsciidoc() {
+  doLast {
+    copy {
+      from "$projectDir/src/docs/asciidoc"
+      into file("$buildDir/asciidoc")
+    }
+    file("$buildDir/asciidoc/").traverse(type:FileType.FILES, nameFilter:'index.adoc') {
+      def info = adocInfo(it)
+      if (info.genfile) {
+        def images = file("${ it.getParent() }/images")
+        if (images.exists()) {
+          def projectPath = info.project.replaceAll(/\/index.adoc/, '')
+          def dist = "asciidoc/images/${ info.path.replaceAll(/\/index.adoc/, '') }"
+          file("$buildDir/${ dist }").mkdirs()
+          copy {
+            from "$projectPath/images"
+            into "$buildDir/${ dist }"
+          }
+        }
+      }
+    }
+  }
+}
+
+task distImage {
+  doLast {
+    file("$projectDir/src/docs/asciidoc/").traverse(type:FileType.FILES, nameFilter:'index.adoc') {
+      def info = adocInfo(it)
+      if (info.genfile) {
+        def images = file("${ it.getParent() }/images")
+        if (images.exists()) {
+          def projectPath = info.project.replaceAll(/\/index.adoc/, '')
+          def dist = "dist/${ info.path.replaceAll(/\/index.adoc/, '') }"
+          file("${ it.getParent() }/$dist").mkdirs()
+          copy {
+            from "$projectPath/images"
+            into "$projectPath/$dist"
+          }
+          copy {
+            from "$projectDir/src/docs/asciidoc/images"
+            into "$projectPath/dist"
+          }
+        }
+      }
+    }
+  }
+}
+
+def adocInfo(File f) {
+  // windowsのパス対応
+  def filePath = f.getPath().replaceAll('\\\\', '/')
+  def srcPath = rootDir.getPath().replaceAll('\\\\', '/')
+  def projectPath = filePath.replaceAll(/^$srcPath\//, '')
+  def path = filePath.replaceAll(/^$srcPath\/.*\/asciidoc\//, '')
+  // 直下のindex.docは自動生成されたモノなので処理しない
+  if (path == 'index.adoc'){
+    return [genfile : false]
+  }
+
+  def m = f.text =~ /\:docname\:\s(.*)/
+  def title = m[0][1]
+  return [
+    genfile : true,
+    title : title,
+    full : filePath,
+    path : path,
+    project : projectPath,
+    original : "src/docs/asciidoc/$path",
+    html : path.replaceAll(/adoc$/, 'html'),
+    pdf : [
+      file: path.replaceAll(/index\.adoc$/, "${ title.replaceAll(/[\p{Blank}　]/, '_') }.pdf"),
+      url: path.replaceAll(/index\.adoc$/, "${ URLEncoder.encode(title.replaceAll(/[\p{Blank}　]/, '_'), 'UTF-8') }.pdf"),
+      index : path.replaceAll(/\.adoc$/, '.pdf')
+    ]
+  ]
+}
+
+task createIndexAdoc(dependsOn: initAsciidoc) {
+  doLast {
+    if (!asciidocFormats.contains('epub3')) {
+      def renameList = []
+      def buf = new StringBuilder()
+      buf.append "= ドキュメント一覧\n\n"
+
+      file("$buildDir/asciidoc/").traverse(type:FileType.FILES, nameFilter:'index.adoc') {
+        def info = adocInfo(it)
+        if (info.genfile) {
+          buf.append "* link:${ info.html }[${ info.title }] (link:../pdf/${ info.pdf.url }[PDF版])\n"
+          buf.append "** 生成元: ${ info.original }\n"
+          renameList << [
+            form : "docs/pdf/${ info.pdf.index }",
+            to : "docs/pdf/${ info.pdf.file }"
+          ]
+        }
+      }
+      file("$buildDir/asciidoc/index.adoc").write(buf.toString(), 'UTF-8')
+      // rename用josnファイルの出力
+      file("$buildDir/asciidoc/rename.json").write(new JsonBuilder(files: renameList).toString(), 'UTF-8')
+    }
+  }
+}
+
+def renamePdf() {
+  new JsonSlurper().parseText(file("$buildDir/asciidoc/rename.json").text).files.each {
+    file("$buildDir/${ it.form }").renameTo(file("$buildDir/${ it.to }"))
+  }
+}
+
+asciidoctor {
+  dependsOn jrubyPrepare
+  separateOutputDirs = true
+  logDocuments = true
+  backends asciidocFormats
+  requires = ['asciidoctor-diagram', 'asciidoctor-pdf-cjk']
+  gemPath = jrubyPrepare.outputDir
+
+  sourceDir = file("$buildDir/asciidoc")
+  outputDir = file("$buildDir/docs")
+  sources {
+    include '**/index.adoc'
+  }
+
+  doLast {
+    def delFiles = [file("$buildDir/docs/pdf/index.pdf")]
+    file("$buildDir/docs").traverse(type:FileType.DIRECTORIES, nameFilter:'.asciidoctor') {
+      delFiles << it
+    }
+    // plantumlで作成した画像があったり無かったりするので画像は削除してhtml5は
+    // 元となるimagesをコピーする
+    file("$buildDir/docs").traverse(type:FileType.DIRECTORIES, nameFilter:'images') {
+      delFiles << it
+    }
+    delFiles.each {
+      project.delete it
+    }
+    copy {
+      from "$buildDir/asciidoc/images"
+      into "$buildDir/docs/html5/images"
+    }
+    // PDFのファイル名を :docname: で定義しているファイル名にリネームする
+    renamePdf()
+  }
+}
+
+asciidoctor.dependsOn createIndexAdoc
+
+task createSpecificationZip(type: Zip) {
+  archiveName "specification_${ dirName }.zip"
+  from 'build/docs'
+}
+
+remotes {
+  http {
+    host = getProperty("http.ssh.host")
+    user = getProperty("http.ssh.user")
+    identity = file(getProperty("http.ssh.identity"))
+    knownHosts = allowAnyHosts
+  }
+}
+
+task deploySpecification(dependsOn: createSpecificationZip) {
+  doLast {
+    ssh.run {
+      settings {
+        pty = true
+      }
+      session(remotes.http) {
+        execute "rm -rf specification_${ dirName }.zip"
+
+        def wwwHome = "${ getProperty('http.www.home') }/${ getProperty('http.www.asciidoc.home') }"
+        if (Boolean.parseBoolean(getProperty('http.www.asciidoc.home.profile'))) {
+          wwwHome += "/$profile"
+        }
+
+        execute "sudo rm -rf ${ wwwHome }"
+        execute "sudo mkdir -p ${ wwwHome }"
+        put from: "build/distributions/specification_${ dirName }.zip", into: "./specification_${ dirName }.zip"
+
+        execute "sudo unzip -d ${ wwwHome } specification_${ dirName }.zip > /dev/null"
+      }
+    }
+  }
+}

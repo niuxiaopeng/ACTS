@@ -1,0 +1,32 @@
+- name: Delete old artifact
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{deploy_path}}/{{artifact_id}}*'
+
+- name: Delete old file/dir 1
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{ delete_old_file1 }}'
+
+- name: Delete old file/dir 2
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{ delete_old_file2 }}'
+
+- name: Delete old file/dir 3
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{ delete_old_file3 }}'
+
+- name: Delete old file/dir 4
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{ delete_old_file4 }}'
+
+- name: Delete old file/dir 5
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{ delete_old_file5 }}'
+
+- name: Delete old file/dir 6
+  shell: docker exec -i {{project_name}} bash -c 'rm -rf {{ delete_old_file6 }}'
+
+- name: Retrieve artifact
+  shell: |
+    docker exec -i {{project_name}} bash -c 'mkdir -p {{ deploy_path }} && wget --user {{ user }} --password {{ pass }} --no-check-certificate "{{ snapshot_artifact }}" -O {{ deploy_path }}/{{ artifact_id }}.{{ extension }}'
+    docker exec -i {{project_name}} bash -c 'chown {{ user_deploy }}:{{ group_deploy }} {{ deploy_path }}/{{ artifact_id }}.{{ extension }}'
+    exit 0
+
+- name: Unarchive new artifact
+  shell: |
+    docker exec -i {{project_name}} bash -c 'unzip {{ deploy_path }}/{{ artifact_id }}.{{ extension }} -d {{ deploy_path }}'
+    docker exec -i {{project_name}} bash -c 'chmod {{ file_permission }} -R {{ deploy_path }} && chown -R {{ user_deploy }}:{{ group_deploy }} {{ deploy_path }}'
+    exit 0

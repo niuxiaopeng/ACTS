@@ -1,0 +1,263 @@
+
+<div class="bs-callout bs-callout-primary">
+  <div>
+    <h3>顧客情報詳細</h3>
+  </div>
+  <div class="customer-detail-form container">
+    <h4>顧客情報の編集</h4>
+    <p>*が付いている項目は必須項目です。</p>
+    <div class="bs-callout-danger" *ngIf="state.errors">
+      <h4>入力内容にエラーがあります。</h4>
+      <h4 *ngFor="let err of state.errors.global;">{{err.message}}</h4>
+    </div>
+    <div class="bs-callout-success" *ngIf="state.result">
+      <h3>{{state.result}}</h3>
+    </div>
+    <table>
+      <tr>
+        <td class="title">
+          <label>顧客No</label><label class="require">*</label>
+        </td>
+        <td class="subtitle">
+          <label>半角英数</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "customerDetailForm.customerNo" type="text" size="13" maxlength="13" id="customerNo" placeholder="13桁" disabled="{{state.editType !== '1'}}"/>
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'customerNo')">
+            <p>{{state.errors.fields | errmsg: 'customerNo'}}</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="title" rowspan="2">
+          <label>氏名</label><label class="require">*</label>
+        </td>
+        <td class="subtitle">
+          <label>氏名（漢字）</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "customerDetailForm.nameKanji" type="text" size="30" maxlength="60" id="nameKanji" placeholder="阿久津太郎"/>
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'nameKanji')">
+            <p>{{state.errors.fields | errmsg: 'nameKanji'}}</p>
+          </div>
+        </td>
+      </tr>
+      <td class="subtitle">
+        <label>氏名（カナ）</label>
+      </td>
+      <td>
+        <input [(ngModel)]= "customerDetailForm.nameKana" type="text" size="30" maxlength="60" id="nameKana" placeholder="アクツタロウ"/>
+        <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'nameKana')">
+          <p>{{state.errors.fields | errmsg: 'nameKana'}}</p>
+        </div>
+      </td>
+      <tr></tr>
+    </table>
+    <table>
+      <tr>
+        <td class="title">
+          <label>性別</label><label class="require">*</label>
+        </td>
+        <td class="subtitle">
+          <label>いずれか選択</label>
+        </td>
+        <td>
+          <div class="radio">
+            <label><input [(ngModel)]= "customerDetailForm.gender" id="male-radio" type="radio" name="gender-radio" value="1">男性</label>
+            <label><input [(ngModel)]= "customerDetailForm.gender" id="female-radio" type="radio"  name="gender-radio" value="2">女性</label>
+            <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'gender')">
+              <p>{{state.errors.fields | errmsg: 'gender'}}</p>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="title">
+          <label>生年月日</label><label class="require">*</label>
+        </td>
+        <td class="subtitle">
+          <label>半角数字</label>
+        </td>
+        <td>
+          <form>
+            <div class="input-group">
+                <input class="form-control" style="float:none" placeholder="Select a date" ngx-mydatepicker name="mydate"
+                       [(ngModel)]="dpbd" [options]="myOptions" #dp="ngx-mydatepicker" (dateChanged)="showWareki($event)" readonly/>
+                <span class="input-group-btn">
+                    <button type="button" class="btn btn-default" (click)="dp.clearDate()">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </button>
+                    <button type="button" class="btn btn-default" (click)="dp.toggleCalendar()">
+                        <i class="glyphicon glyphicon-calendar"></i>
+                    </button>
+                </span>
+            </div>
+          </form>
+          <!-- <input [(ngModel)]= "customerDetailForm.birthday" type="date" (change)="showWareki(customerDetailForm.birthday)" /> -->
+          <span *ngIf="this.birthdayJp != null">{{this.birthdayJp}}</span>
+          <!-- <input [(ngModel)]= "birthdayYear" type="text"  size="4" maxlength="4" id="birthdayYear" />
+          <label> 年 </label>
+          <input [(ngModel)]= "birthdayMonth" type="text"  size="2" maxlength="2" id="birthdayMonth" />
+          <label> 月 </label>
+          <input [(ngModel)]= "birthdayDay" type="text" size="2"  maxlength="2" id="birthdayDay" />
+          <label> 日 </label> -->
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'birthday')">
+            <p>{{state.errors.fields | errmsg: 'birthday'}}</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="title">
+        <label>電話番号</label><label class="require">*</label>
+        </td>
+        <td class="subtitle">
+          <label>半角数字</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "telNo1" type="text"  size="4" maxlength="4" id="telNo1" />
+          <label> - </label>
+          <input [(ngModel)]= "telNo2" type="text"  size="4" maxlength="4" id="telNo2" />
+          <label> - </label>
+          <input [(ngModel)]= "telNo3" type="text" size="4" maxlength="4" id="telNo3" />
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'telNo')">
+            <p>{{state.errors.fields | errmsg: 'telNo'}}</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="title" rowspan="2">
+          <label>住所</label>
+        </td>
+        <td class="subtitle">
+          <label>郵便番号</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "addressZip1" type="text"  size="3" maxlength="3" id="addressZip1" />
+          <label> - </label>
+          <input [(ngModel)]= "addressZip2" type="text"  size="4" maxlength="4" id="addressZip2" />
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'addressZip')">
+            <p>{{state.errors.fields | errmsg: 'addressZip'}}</p>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="subtitle">
+          <label>住所</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "customerDetailForm.address" type="text"  size="50" maxlength="200" id="address" placeholder="○○県××区△△1-1◇◇"   />
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'address')">
+            <p>{{state.errors.fields | errmsg: 'address'}}</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <td class="title">
+          <label>Eメール</label>
+        </td>
+        <td class="subtitle">
+          <label>半角英数</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "customerDetailForm.email" type="text"  size="30" maxlength="100"  id="email" placeholder="sample@email.com" />
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'email')">
+            <p>{{state.errors.fields | errmsg: 'email'}}</p>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div *ngIf="this.state.editType === this.const.EDIT_TYPE_EDIT">
+    <table>
+      <tr>
+        <td class="title" rowspan="3">
+          <label>家族情報</label>
+        </td>
+        <td class="subtitle">
+            <label>氏名（漢字）</label>
+        </td>
+        <td>
+          <input [(ngModel)]= "familyForm.nameKanji" type="text" size="30" maxlength="60" id="nameKanjiFamily" placeholder="阿久津次郎"/>
+          <div class="bs-callout-danger" *ngIf="(state.errors?.fields | errexist: 'nameKanjiF')">
+            <p>{{state.errors.fields | errmsg: 'nameKanjiF'}}</p>
+          </div>
+        </td>
+        <td rowspan="2"><button id="addFmBtn"  class="btn btn-primary" (click)="addFamily()">登録</button></td>
+      </tr>
+      <tr>
+        <td class="subtitle">
+          <label>続柄</label>
+        </td>
+        <td>
+          <select [(ngModel)]= "familyForm.relationship">
+            <option *ngFor="let option of this.const.RELATIONSHIP; let idx = index;" value={{option.val}}>
+              {{option.disp}}
+            </option>
+          </select>
+        </td>
+      </tr>
+    </table>
+
+    <table>
+      <tr>
+        <td class="title">
+          <label>登録済情報</label>
+        </td>
+        <td class="subtitle">
+            <label>一覧</label>
+        </td>
+        <td>
+          <table class="table table-fixed">
+            <thead>
+            <tr>
+              <th>氏名漢字</th>
+              <th>続柄</th>
+              <th>変更</th>
+            </tr>
+            </thead>
+            <tbody *ngIf="state.familySearchListEntity.familyInfo.length > 0; else blank;">
+              <tr *ngFor="let family of state.familySearchListEntity.familyInfo; let idx = index;">
+                <!-- 表示 -->
+                <td *ngIf="!state.isFamEditMode[idx]; else blank;">{{family.nameKanji}}</td>
+                <td *ngIf="!state.isFamEditMode[idx]; else blank;">{{family.relationship}}</td>
+                <td *ngIf="!state.isFamEditMode[idx]; else blank;">
+                  <button id="editFamBtn{{idx}}" class="btn btn-sub btn-sm" (click)="editFam(idx, family)">編集</button>
+                  <button id="delFamBtn{{idx}}" class="btn btn-sub btn-sm" (click)="delFam(family)">削除</button>
+                </td>
+                <!-- 編集 -->
+                <td *ngIf="state.isFamEditMode[idx]; else blank;"><input [(ngModel)]="familyEditForm.nameKanji" type="text" /></td>
+                <td *ngIf="state.isFamEditMode[idx]; else blank;">
+                  <select [(ngModel)] = "familyEditForm.relationship">
+                    <option *ngFor="let option of this.const.RELATIONSHIP; let idx = index;" value={{option.val}}>
+                        {{option.disp}}
+                    </option>
+                  </select>
+                </td>
+                <td *ngIf="state.isFamEditMode[idx]; else blank;">
+                  <button id="editFamBtn{{idx}}" class="btn btn-sub btn-sm" (click)="updFam(idx, familyEditForm)">確定</button>
+                  <button id="delFamBtn{{idx}}" class="btn btn-sub btn-sm" (click)="cancelFam(idx)">取消</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+    <div class="button-box">
+      <button id="backBtn"  class="btn btn-primary" (click)="back()">戻る</button>
+      <button id="editBtn"  class="btn btn-primary" (click)="submit()">保存</button>
+      <button id="deleteBtn"  class="btn btn-primary" (click)="delete()" *ngIf="this.state.editType === this.const.EDIT_TYPE_EDIT">削除</button>
+    </div>
+  </div>
+</div>

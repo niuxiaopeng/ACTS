@@ -1,0 +1,35 @@
+# ----------- common --------------
+common:
+  dialog:
+    ok: OK
+    cancel: キャンセル
+    yes: はい
+    no: いいえ
+  message:
+    success_create: 登録が成功しました
+    success_update: 更新が成功しました
+  gender:
+    male: 男性
+    female: 女性
+# ------------ customer ---------------
+customer:
+  customerNo: 顧客No
+  nameKanji: 氏名（漢字）
+  nameKana: 氏名（カナ）
+  gender: 性別
+  birthday: 生年月日
+  telNo: 電話番号
+  addressZip: 郵便番号
+  address: 住所
+  email: Eメール
+
+# ------------ family ---------------
+family:
+  customerNo: 顧客No
+  nameKanji: 家族情報の氏名（漢字）
+  gender: 性別
+
+# ------------ tabpage ---------------
+tab:
+  about:
+    description: label service test
