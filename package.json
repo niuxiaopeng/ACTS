@@ -61,7 +61,7 @@
     "js-yaml": "^3.13.1",
     "json-loader": "0.5.7",
     "mkdirp": "0.5.1",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "postcss": "6.0.14",
     "q": "1.5.1",
     "raw-loader": "0.5.1",
