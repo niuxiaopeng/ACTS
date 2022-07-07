@@ -33,7 +33,7 @@
     "bootstrap-sass": "3.3.7",
     "core-js": "2.5.1",
     "font-awesome": "4.7.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "ngx-bootstrap": "2.0.2",
     "ngx-mydatepicker": "2.4.9",
     "reflect-metadata": "0.1.10",
